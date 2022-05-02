@@ -3,8 +3,16 @@ import scrapy
 # from urllib.parse import urljoin
 import logging
 import json
+import pymongo
 
 log = logging.getLogger(__name__)
+
+#mongoDB connect 
+mongo = pymongo.MongoClient(port=27017)
+db = mongo.Wikipedia
+collection = db.Pages
+#create index on url to keep unique 
+collection.create_index([("url", pymongo.ASCENDING)],unique = True)
 
 class WikiSpider(scrapy.Spider):
     name = "wiki"
@@ -30,6 +38,7 @@ class WikiSpider(scrapy.Spider):
         try:
             with open("pages/"+filename,"w") as f:
                 json.dump(scraped,f)
+            collection.insert_one(scraped)
         except:
             log.debug("Error creating file")
         

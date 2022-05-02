@@ -8,9 +8,11 @@ log = logging.getLogger(__name__)
 
 class WikiSpider(scrapy.Spider):
     name = "wiki"
+    allowed_domains = ['wikipedia.org']
     start_urls = [
-        'https://en.wikipedia.org/wiki/Dmitry_Lebed'
+        'https://en.wikipedia.org/wiki/Common-law_marriage'
     ]
+    
 
     def parse(self, response):
         page = response.url.split('/')[-1]
@@ -19,10 +21,11 @@ class WikiSpider(scrapy.Spider):
         scraped = {
                 'url': response.url,
                 'title': response.css('#firstHeading::text').get(),
-                'mainText': ' '.join(response.css('p::text').re('[^\n].*')),
-                'boldText': response.css('b::text').re('.{2,}'),
+                'editDate': response.css('#footer-info-lastmod').re('\d+[A-Za-z\s]+\d+')[0],
                 'TOC': response.css('.toc .toctext::text').getall(),
-                'editDate': response.css('#footer-info-lastmod').re('\d+[A-Za-z\s]+\d+')[0]
+                'mainText': ' '.join(response.css('#content p::text, #content a::text').re('[A-Za-z0-9\-]+')).lower(),
+                'boldText': ' '.join(response.css('#content p b::text').re('.{2,}')).lower(),
+                'italicText': ' '.join(response.css('#content p i::text').re('.{2,}')).lower()
                 }
         try:
             with open("pages/"+filename,"w") as f:
@@ -55,6 +58,7 @@ class WikiSpider(scrapy.Spider):
         #prob need to do some error checking if null
         # try:
             # yield{
+            #     'id': hashlib.sha256(str(response.url).encode('utf-8')).hexdigest()
             #     'url': response.url,
             #     'title': response.css('#firstHeading::text').get(),
             #     'mainText': ' '.join(response.css('p::text').re('[^\n].*')),
@@ -66,7 +70,8 @@ class WikiSpider(scrapy.Spider):
         #     log.debug("Yikes")
         #---------------------------------------------------------------------------------------------
 
-        hrefText = response.css('a::attr(href)').re('/wiki/.*')
+        #Get all href within content body
+        hrefText = response.css('#content a::attr(href)').re('/wiki/.*')
         # joins href with domain 
         nextPages = set([response.urljoin(link) for link in hrefText])
         # TODO: follow next link 

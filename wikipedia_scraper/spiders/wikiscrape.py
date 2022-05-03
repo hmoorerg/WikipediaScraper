@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-import re
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class WikiSpider1(scrapy.Spider):
         #Get all href within content body (idk any more filenames that wiki has. Add any you find)
         hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|PNG|JPG|TIF|SVG|GIF))$')
         # stupid jpeg
-        hrefLinks = set([x for x in hrefText if not '.jpeg' in x])
+        hrefLinks = set([x for x in hrefText if not ('.jpeg' in x or '.JPEG' in x)])
         #------------------------------------------------------------------------------------------
         yield from response.follow_all(hrefLinks, callback=self.parse)
 
@@ -104,7 +103,7 @@ class WikiSpider2(scrapy.Spider):
         #Get all href within content body (idk any more filenames that wiki has. Add any you find)
         hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|PNG|JPG|TIF|SVG|GIF))$')
         # stupid jpeg
-        hrefLinks = set([x for x in hrefText if not '.jpeg' in x])
+        hrefLinks = set([x for x in hrefText if not ('.jpeg' in x or '.JPEG' in x)])
         #------------------------------------------------------------------------------------------
         yield from response.follow_all(hrefLinks, callback=self.parse)
 

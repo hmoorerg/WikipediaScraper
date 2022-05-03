@@ -1,7 +1,10 @@
 import scrapy
+import sys
 import logging
 from datetime import datetime
-from scrapy.crawler import CrawlerProcess
+from twisted.internet import reactor
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 log = logging.getLogger(__name__)
@@ -12,19 +15,22 @@ class WikiSpider1(scrapy.Spider):
     def __init__(self, filename=None):
         if filename:
             with open(filename, 'r') as f:
-                self.start_urls = [url.strip() for url in f.readlines()]
+                full = [url.strip() for url in f.readlines()]
+                # split half of input file
+                self.start_urls = full[:len(full)//2]
+                print(self.start_urls)
         else:
             self.start_urls = ['https://en.wikipedia.org/wiki/Dog']
-        
+            
     name = "wiki"
     allowed_domains = ['wikipedia.org']
     # start_urls = ['https://en.wikipedia.org/wiki/Dog']
     #link extractor rule doesnt really work
 
     def parse(self, response):
-        log.info('Parse function called on %s', response.url)
-        page = response.url.split('/')[-1]
-        filename = 'wiki-%s.json' % page
+        log.info('Parse function called on %s on spider %s', response.url,self.name)
+        # page = response.url.split('/')[-1]
+        # filename = 'wiki-%s.json' % page
 
         # Doesnt always return 
         # editDate = response.css('#footer-info-lastmod').re('\d+[A-Za-z\s]+\d+')
@@ -63,7 +69,10 @@ class WikiSpider2(scrapy.Spider):
     def __init__(self, filename=None):
         if filename:
             with open(filename, 'r') as f:
-                self.start_urls = [url.strip() for url in f.readlines()]
+                full = [url.strip() for url in f.readlines()]
+                # split half of input file
+                self.start_urls = full[len(full)//2:]
+                print(self.start_urls)
         else:
             self.start_urls = ['https://en.wikipedia.org/wiki/Cat']
 
@@ -73,7 +82,7 @@ class WikiSpider2(scrapy.Spider):
     # link extractor rule doesnt really work
 
     def parse(self, response):
-        log.info('Parse function called on %s', response.url)
+        log.info('Parse function called on %s on spider %s', response.url,self.name)
         # page = response.url.split('/')[-1]
         # filename = 'wiki-%s.json' % page
 
@@ -108,9 +117,30 @@ class WikiSpider2(scrapy.Spider):
         yield from response.follow_all(hrefLinks, callback=self.parse)
 
 
-if __name__ == '__main__':
+def main(filename=None, cset=None):
     settings = get_project_settings()
-    process = CrawlerProcess(settings)
-    process.crawl(WikiSpider1)
-    process.crawl(WikiSpider2)
-    process.start() 
+
+    configure_logging()
+
+    settings = get_project_settings()
+    if cset:
+        for k,v in cset.items():
+            settings[k] = v
+    
+    runner = CrawlerRunner(settings)
+    runner.crawl(WikiSpider2,filename)
+    runner.crawl(WikiSpider1,filename)
+    d = runner.join()
+    d.addBoth(lambda _: reactor.stop())
+    reactor.run()
+
+if __name__ == '__main__':
+    if(len(sys.argv)>1):
+        file = sys.argv[1]
+        if '=' in file:
+            file = None
+            main(file, dict(arg.split('=') for arg in sys.argv[1:]))
+        else:
+            main(file, dict(arg.split('=') for arg in sys.argv[2:]))
+    else:
+        main()

@@ -49,7 +49,7 @@ class MongoDBPipeline(object):
         try:
             self.collection.insert_one(item)
         except:
-            raise DropItem("Duplicate item title found: %s" % item)
+            raise DropItem("Duplicate url found: %s" % item['url'])
 
         # if item['url'] in self.url_seen:
         #     raise DropItem("Duplicate item title found: %s" % item)

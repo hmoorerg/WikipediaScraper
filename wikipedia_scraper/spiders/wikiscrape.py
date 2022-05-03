@@ -42,13 +42,15 @@ class WikiSpider1(scrapy.Spider):
         }
 
         #------------------------------------------------------------------------------------------
-        #Get all href within content body
-        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:jpg|png|svg))$')
+        #Get all href within content body (idk any more filenames that wiki has. Add any you find)
+        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpeg|jpg|png|svg|tif))$')
         # joins href with domain 
         nextPages = set([response.urljoin(link) for link in hrefText])
         #------------------------------------------------------------------------------------------
         yield from response.follow_all(nextPages, callback=self.parse)
 
+
+# Testing out multiple spiders
 class WikiSpider2(scrapy.Spider):
     def __init__(self, filename=None):
         if filename:
@@ -83,8 +85,8 @@ class WikiSpider2(scrapy.Spider):
         }
 
         #------------------------------------------------------------------------------------------
-        #Get all href within content body
-        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:jpg|png|svg))$')
+        #Get all href within content body (idk any more filenames that wiki has. Add any you find)
+        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpeg|jpg|png|svg|tif))$')
         # joins href with domain 
         nextPages = set([response.urljoin(link) for link in hrefText])
         #------------------------------------------------------------------------------------------

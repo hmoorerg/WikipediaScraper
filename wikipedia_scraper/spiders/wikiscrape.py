@@ -32,10 +32,10 @@ class WikiSpider1(scrapy.Spider):
         # if editDate:
         #     editDate = response.css('#footer-info-lastmod').re('\d+[A-Za-z\s]+\d+')[0]
         
-        last_modified_date_raw = None
+        last_modified_date = None
         if response.headers.has_key('last-modified'):
             last_modified_date_raw = response.headers["last-modified"].decode('ascii')
-            last_modified_date  = datetime.fromtimestamp(
+            last_modified_date = datetime.fromtimestamp(
                 datetime.strptime(last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT").timestamp())
 
         yield {
@@ -51,7 +51,7 @@ class WikiSpider1(scrapy.Spider):
 
         #------------------------------------------------------------------------------------------
         #Get all href within content body (idk any more filenames that wiki has. Add any you find)
-        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|tif|PNG))$')
+        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|PNG|JPG|TIF|SVG|GIF))$')
         # stupid jpeg
         hrefLinks = set([x for x in hrefText if not '.jpeg' in x])
         #------------------------------------------------------------------------------------------
@@ -83,10 +83,10 @@ class WikiSpider2(scrapy.Spider):
         # if editDate:
         #     editDate = response.css('#footer-info-lastmod').re('\d+[A-Za-z\s]+\d+')[0]
 
-        last_modified_date_raw = None
+        last_modified_date = None
         if response.headers.has_key('last-modified'):
             last_modified_date_raw = response.headers["last-modified"].decode('ascii')
-            last_modified_date  = datetime.fromtimestamp(
+            last_modified_date = datetime.fromtimestamp(
                 datetime.strptime(last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT").timestamp())
 
         yield {
@@ -102,7 +102,7 @@ class WikiSpider2(scrapy.Spider):
 
         #------------------------------------------------------------------------------------------
         #Get all href within content body (idk any more filenames that wiki has. Add any you find)
-        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|PNG))$')
+        hrefText = response.css('#content a::attr(href)').re(r'^/wiki/.*(?<![.](?:gif|jpg|png|svg|tif|PNG|JPG|TIF|SVG|GIF))$')
         # stupid jpeg
         hrefLinks = set([x for x in hrefText if not '.jpeg' in x])
         #------------------------------------------------------------------------------------------

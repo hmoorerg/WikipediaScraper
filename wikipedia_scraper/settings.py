@@ -88,9 +88,11 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 #Mongo config
-ITEM_PIPELINES = {'wikipedia_scraper.pipelines.MongoDBPipeline': 0}
+ITEM_PIPELINES = {'wikipedia_scraper.pipelines.MongoDBPipeline': 100}
 MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
 MONGODB_DB = "Wikipedia"
 MONGODB_COLLECTION = "Pages"
+
 #Setting for the project 
+COOKIES_ENABLED=False 

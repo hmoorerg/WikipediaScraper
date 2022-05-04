@@ -49,13 +49,24 @@ def main():
     parser.add_argument('-d', '--depth', metavar='', type=int, help="Depth limit on crawl (default = inf)")
     parser.add_argument('-o', '--output', metavar='', type=str, 
             help="Output directory to store scraped pages. Creates directory if doesn't exist")
+    parser.add_argument('-m', '--mongo', action='store_true', help="Option to enable mongo pipeline. Configure settings in settings.py")
     parser.add_argument('-s', '--silent', action='store_true', help="Option to supress log to INFO")
     args = parser.parse_args()
 
     settings = get_project_settings()
     if args.output:
         os.makedirs(f"{args.output}", exist_ok=True)
-        settings['ITEM_PIPELINES']['wikipedia_scraper.pipelines.StoreLocalPipeline'] = 200
+        settings['FEED_EXPORT_BATCH_ITEM_COUNT'] = 1
+        settings['FEEDS'] = {
+           f"{args.output}/%(batch_id)d-page%(batch_time)s.json" : {
+               'format' : 'json',
+               'encoding': 'utf8',
+               'item_export_kwargs': {
+                    'export_empty_fields': True,
+                }
+           }
+        }
+        #settings['ITEM_PIPELINES']['wikipedia_scraper.pipelines.StoreLocalPipeline'] = 200
         settings['output_dir'] = args.output
     if args.depth:
         settings['DEPTH_LIMIT'] = args.depth
@@ -63,6 +74,8 @@ def main():
         settings['CLOSESPIDER_PAGECOUNT'] = args.num_page
     if args.silent:
         settings['LOG_LEVEL'] = "INFO"
+    if args.mongo:
+        settings['ITEM_PIPELINES']['wikipedia_scraper.pipelines.MongoDBPipeline'] = 100
 
     process = CrawlerProcess(settings)
     process.crawl(WikiSpider,args.infile)

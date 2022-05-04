@@ -47,6 +47,7 @@ class MongoDBPipeline(object):
             self.collection.update_one({'url': item['url']}, {"$set": item }, upsert=True)
         except:
             raise DropItem("Error adding item to DB with url: %s" % item['url'])
+        return item
 
 class StoreLocalPipeline:
     def __init__(self, output_dir):

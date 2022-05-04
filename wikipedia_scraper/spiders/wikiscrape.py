@@ -44,13 +44,13 @@ class WikiSpider(scrapy.Spider):
 
 def main():
     parser = argparse.ArgumentParser(description="Crawler options. To configure mongoDB connection, please edit project settings.py")
-    parser.add_argument('-i', '--infile', metavar='', type=argparse.FileType('r'), help="Input seed file of urls")
-    parser.add_argument('-p', '--num_page', metavar='', type=int, help="Page limit on crawl (default = inf)")
-    parser.add_argument('-d', '--depth', metavar='', type=int, help="Depth limit on crawl (default = inf)")
+    parser.add_argument('inputfile', metavar='input_file', nargs='?', type=argparse.FileType('r'), help="Input seed file of urls")
+    parser.add_argument('-p', '--num_page', metavar='#', type=int, help="Page limit on crawl (default = inf)")
+    parser.add_argument('-d', '--depth', metavar='#', type=int, help="Depth limit on crawl (default = inf)")
     parser.add_argument('-o', '--output', metavar='', type=str, 
             help="Output directory to store scraped pages. Creates directory if doesn't exist")
     parser.add_argument('-m', '--mongo', action='store_true', help="Option to enable mongo pipeline. Configure settings in settings.py")
-    parser.add_argument('-s', '--silent', action='store_true', help="Option to supress log to INFO")
+    parser.add_argument('-s', '--silent', action='store_true', help="Option to supress logging to INFO")
     args = parser.parse_args()
 
     settings = get_project_settings()
@@ -78,7 +78,7 @@ def main():
         settings['ITEM_PIPELINES']['wikipedia_scraper.pipelines.MongoDBPipeline'] = 100
 
     process = CrawlerProcess(settings)
-    process.crawl(WikiSpider,args.infile)
+    process.crawl(WikiSpider,args.inputfile)
     process.start()
 
 if __name__ == "__main__":

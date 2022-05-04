@@ -9,9 +9,9 @@ from scrapy.utils.project import get_project_settings
 log = logging.getLogger(__name__)
 
 class WikiSpider(scrapy.Spider):
-    def __init__(self, filename=None):
-        if filename:
-            with open(filename, 'r') as f:
+    def __init__(self, file=None):
+        if file:
+            with file as f:
                 self.start_urls = [url.strip() for url in f.readlines()]
         else:
             self.start_urls = ['https://en.wikipedia.org/wiki/Dog']        
@@ -67,7 +67,7 @@ def main():
            }
         }
         #settings['ITEM_PIPELINES']['wikipedia_scraper.pipelines.StoreLocalPipeline'] = 200
-        settings['output_dir'] = args.output
+        #settings['output_dir'] = args.output
     if args.depth:
         settings['DEPTH_LIMIT'] = args.depth
     if args.num_page:

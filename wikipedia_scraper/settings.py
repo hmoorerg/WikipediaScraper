@@ -62,13 +62,13 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'wikipedia_scraper.pipelines.WikipediaScraperPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'wikipedia_scraper.pipelines.MongoPipeline': 0
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
@@ -86,3 +86,10 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+#Mongo config
+MONGO_URI = "mongodb://localhost:27017"
+# MONGO_DATABASE = "Wikipedia"
+# MONGO_COLLECTION = "Pages"
+# MONGO_USERNAME = "root"
+# MONGO_PASSWORD = "example"

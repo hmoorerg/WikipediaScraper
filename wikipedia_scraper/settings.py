@@ -91,5 +91,5 @@ AUTOTHROTTLE_ENABLED = True
 MONGO_URI = "mongodb://localhost:27017"
 # MONGO_DATABASE = "Wikipedia"
 # MONGO_COLLECTION = "Pages"
-MONGO_USERNAME = "root"
-MONGO_PASSWORD = "example"
+# MONGO_USERNAME = "root"
+# MONGO_PASSWORD = "example"

@@ -21,11 +21,22 @@ class WikipediaScraper(scrapy.Spider):
         title = response.css('h1.firstHeading *::text').get()
         last_modified_date_raw = response.headers["last-modified"].decode('ascii')
         last_modified_date = datetime.fromtimestamp(datetime.strptime(last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT").timestamp())
+        
+        respond = {'Title' : title, 'Url' : response.url, 'Last Modified' : last_modified_date}
 
+        if (response.css('//class[@id="geo-dms"]').get() is not None):
+            latitude = response.css('//class[@id="latitude"]').get()
+            longitude = response.css('//class[@id="longitude"]').get()
+            respond['latitude'] = latitude
+            respond['longitude'] = longitude
+        
+        i = 1
+        for header_two in response.css('//class[@id="mw-headline"]').getall():
+            respond['subheader ' + i] = header_two
+            ++i
+        
         yield {
-            'Title' : title,
-            'Url' : response.url,
-            'Last Modified' : last_modified_date
+            respond
         }
 
         self.write_to_disk(response)

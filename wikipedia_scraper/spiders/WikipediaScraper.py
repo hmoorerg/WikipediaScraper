@@ -10,7 +10,7 @@ from datetime import datetime
 class WikipediaScraper(scrapy.Spider):
     name = "wikiscraper"
     allowed_domains = ["en.wikipedia.org","wiktionary.org","species.wikimedia.org"]
-    start_urls = ["https://en.wikipedia.org/wiki/Wikipedia"]
+    start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
     rules = (
         Rule(LinkExtractor(allow=r"wiki/"), callback='parse', follow=True)
     )
@@ -22,21 +22,20 @@ class WikipediaScraper(scrapy.Spider):
         last_modified_date_raw = response.headers["last-modified"].decode('ascii')
         last_modified_date = datetime.fromtimestamp(datetime.strptime(last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT").timestamp())
         
-        respond = {'Title' : title, 'Url' : response.url, 'Last Modified' : last_modified_date}
+        coordinates = None
+        if (response.css('span.geo-dms').get() is not None):
+            latitude = response.css('span.latitude::text').get()
+            longitude = response.css('span.longitude::text').get()
+            coordinates = (latitude, longitude)
 
-        if (response.css('//class[@id="geo-dms"]').get() is not None):
-            latitude = response.css('//class[@id="latitude"]').get()
-            longitude = response.css('//class[@id="longitude"]').get()
-            respond['latitude'] = latitude
-            respond['longitude'] = longitude
-        
-        i = 1
-        for header_two in response.css('//class[@id="mw-headline"]').getall():
-            respond['subheader ' + i] = header_two
-            ++i
-        
+        subheaders = response.css('span.mw-headline::text').getall() 
+    
         yield {
-            respond
+            'Title' : title,
+            'Url' : response.url,
+            'Last Modified' : last_modified_date,
+            'Subheaders' : subheaders,
+            'Coordinates' : coordinates
         }
 
         self.write_to_disk(response)

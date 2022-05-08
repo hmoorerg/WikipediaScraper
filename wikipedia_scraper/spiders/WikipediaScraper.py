@@ -12,8 +12,12 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
     name = "wikiscraper"
     allowed_domains = ["en.wikipedia.org", "www.wiktionary.org", "species.wikimedia.org"]
     start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
+
+    general_link_extractor = LinkExtractor()
+    wikipedia_link_extractor = LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", ))
+
     rules = (
-        Rule(LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", )), callback="parse", follow=True),
+        Rule(wikipedia_link_extractor, callback="parse", follow=True),
     )
 
     def parse(self, response):
@@ -28,13 +32,19 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             coordinates = (latitude, longitude)
 
         subheaders = response.css('span.mw-headline::text').getall()
+        links_and_fragments = self.general_link_extractor.extract_links(response)
+        links = [link.url for link in links_and_fragments if link.fragment == ""]
+
+        num_of_references = len(response.css("ol.references li").getall())
 
         yield {
             'Title': title,
             'Url': response.url,
             'Last Modified': last_modified_date,
+            'Coordinates': coordinates,
+            'Number of References': num_of_references,
             'Subheaders': subheaders,
-            'Coordinates': coordinates
+            'Links': links
         }
 
         self.write_to_disk(response)

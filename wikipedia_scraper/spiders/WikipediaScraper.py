@@ -35,6 +35,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             'Last Modified': last_modified_date,
             'Subheaders': subheaders,
             'Coordinates': coordinates
+            'Links': response.css('a::attr(href)').getall()
         }
 
         self.write_to_disk(response)

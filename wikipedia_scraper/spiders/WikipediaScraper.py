@@ -7,13 +7,16 @@ import urllib
 import base64
 from datetime import datetime
 
+
 class WikipediaScraper(scrapy.spiders.CrawlSpider):
     name = "wikiscraper"
-    allowed_domains = ["en.wikipedia.org", "www.wiktionary.org", "species.wikimedia.org"]
+    allowed_domains = ["en.wikipedia.org",
+                       "www.wiktionary.org", "species.wikimedia.org"]
     start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
 
     general_link_extractor = LinkExtractor()
-    wikipedia_link_extractor = LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", ))
+    wikipedia_link_extractor = LinkExtractor(
+        allow=(r"wikipedia\.org\/wiki\/[^:]*$", ))
 
     rules = (
         Rule(wikipedia_link_extractor, callback="parse", follow=True),
@@ -21,8 +24,10 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
 
     def parse(self, response):
         title = response.css('h1.firstHeading *::text').get()
-        last_modified_date_raw = response.headers["last-modified"].decode('ascii')
-        last_modified_date = datetime.strptime(last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT")
+        last_modified_date_raw = response.headers["last-modified"].decode(
+            'ascii')
+        last_modified_date = datetime.strptime(
+            last_modified_date_raw, "%a, %d %b %Y %H:%M:%S GMT")
 
         coordinates = None
         if (response.css('span.geo-dms').get() is not None):
@@ -31,7 +36,10 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             coordinates = (latitude, longitude)
 
         subheaders = response.css('span.mw-headline::text').getall()
-        links_and_fragments = self.general_link_extractor.extract_links(response)
+        categories = response.css('div.mw-normal-catlinks a::text').getall()
+        categories.pop(0)
+        links_and_fragments = self.general_link_extractor.extract_links(
+            response)
         links = [link.url for link in links_and_fragments if link.fragment == ""]
 
         num_of_references = len(response.css("ol.references li").getall())
@@ -43,6 +51,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             'Coordinates': coordinates,
             'Number of References': num_of_references,
             'Subheaders': subheaders,
+            'Categories': categories,
             'Links': links
         }
 

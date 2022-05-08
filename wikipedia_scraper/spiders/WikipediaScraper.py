@@ -35,7 +35,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             'Url': response.url,
             'Last Modified': last_modified_date,
             'Subheaders': subheaders,
-            'Coordinates': coordinates
+            'Coordinates': coordinates,
             'Links': links
         }
 

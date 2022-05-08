@@ -88,6 +88,7 @@ AUTOTHROTTLE_ENABLED = True
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 #Mongo config
+ENABLE_MONGO_WRITER = True
 MONGO_URI = "mongodb://localhost:27017"
 # MONGO_DATABASE = "Wikipedia"
 # MONGO_COLLECTION = "Pages"

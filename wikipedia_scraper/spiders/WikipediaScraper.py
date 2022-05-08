@@ -7,7 +7,6 @@ import urllib
 import base64
 from datetime import datetime
 
-
 class WikipediaScraper(scrapy.spiders.CrawlSpider):
     name = "wikiscraper"
     allowed_domains = ["en.wikipedia.org", "www.wiktionary.org", "species.wikimedia.org"]

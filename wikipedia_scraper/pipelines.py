@@ -2,7 +2,6 @@ import pymongo
 from itemadapter import ItemAdapter
 
 class MongoPipeline:
-
     collection_name = 'scrapy_items'
 
     def __init__(self, mongo_uri, mongo_db, collection_name, username, password):
@@ -38,7 +37,6 @@ class MongoPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-
         data = ItemAdapter(item).asdict()
 
         self.db[self.collection_name].update_one({'Url': data['Url']}, {'$set': data}, upsert=True)

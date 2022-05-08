@@ -13,7 +13,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
     allowed_domains = ["en.wikipedia.org", "www.wiktionary.org", "species.wikimedia.org"]
     start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
     rules = (
-        Rule(LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", ))),
+        Rule(LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", )), callback="parse", follow=True),
     )
 
     def parse(self, response):
@@ -38,8 +38,6 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
         }
 
         self.write_to_disk(response)
-
-        yield from response.follow_all(css='a', callback=self.parse)
 
     def write_to_disk(self, response):
         os.makedirs("./HTML_OUT", exist_ok=True)

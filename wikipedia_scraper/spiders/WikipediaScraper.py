@@ -29,7 +29,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
 
         subheaders = response.css('span.mw-headline::text').getall()
         links = response.css('a::attr(href)').getall()
-        references = len(response.css("ol.references li").getall())
+        references = len(response.xpath('//div[@class="references"]/li'))
 
         yield {
             'Title': title,

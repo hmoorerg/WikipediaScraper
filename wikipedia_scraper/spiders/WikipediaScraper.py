@@ -14,7 +14,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
     start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
 
     general_link_extractor = LinkExtractor()
-    wikipedia_link_extractor = LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^#:]*$", ))
+    wikipedia_link_extractor = LinkExtractor(allow=(r"wikipedia\.org\/wiki\/[^:]*$", ))
 
     rules = (
         Rule(wikipedia_link_extractor, callback="parse", follow=True),

@@ -29,6 +29,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
 
         subheaders = response.css('span.mw-headline::text').getall()
         links = response.css('a::attr(href)').getall()
+        references = len(response.css("ol.references li").getall())
 
         yield {
             'Title': title,
@@ -36,7 +37,8 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             'Last Modified': last_modified_date,
             'Subheaders': subheaders,
             'Coordinates': coordinates,
-            'Links': links
+            'Links': links,
+            'References': references
         }
 
         self.write_to_disk(response)

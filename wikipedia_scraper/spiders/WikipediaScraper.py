@@ -11,7 +11,7 @@ from datetime import datetime
 class WikipediaScraper(scrapy.spiders.CrawlSpider):
     name = "wikiscraper"
     allowed_domains = ["en.wikipedia.org","www.wiktionary.org", "species.wikimedia.org"]
-    start_urls = ["https://en.wikipedia.org/wiki/Statue_of_Liberty"]
+    start_urls = open("seed_urls.txt","r").readlines()
 
     # A link extractor that will extract all links from the page
     general_link_extractor = LinkExtractor()

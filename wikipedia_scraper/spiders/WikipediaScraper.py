@@ -37,7 +37,7 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
         if (response.css('span.geo-dms').get() is not None):
             latitude = response.css('span.latitude::text').get()
             longitude = response.css('span.longitude::text').get()
-            coordinates = (latitude, longitude)
+            coordinates = { "latitude": latitude, "longitude": longitude }
 
         # Gets the subheaders from the wikipedia page
         subheaders = response.css('span.mw-headline::text').getall()

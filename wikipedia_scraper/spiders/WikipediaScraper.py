@@ -55,6 +55,9 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
         # Gets the number of sources that the article has
         num_of_references = len(response.css("ol.references li").getall())
 
+        # Get the body text of the article
+        body_text = ''.join(response.css("div#mw-content-text ::text").getall())              
+
         # Returns the article's metadata
         yield {
             'Title': title,
@@ -64,7 +67,8 @@ class WikipediaScraper(scrapy.spiders.CrawlSpider):
             'Number of References': num_of_references,
             'Subheaders': subheaders,
             'Categories': categories,
-            'Links': links
+            'Links': links,
+            'Body Text': body_text 
         }
 
         # Write the wikipedia html file to disk
